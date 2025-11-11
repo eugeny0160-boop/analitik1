@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: telegram-analytic-bot
+    runtime: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python main.py"
+    envVars:
+      - key: TELEGRAM_BOT_TOKEN
+        fromSecret: TELEGRAM_BOT_TOKEN
+      - key: SUPABASE_URL
+        fromDatabase:
+          name: supabase-db
+          property: url
+      - key: SUPABASE_KEY
+        fromDatabase:
+          name: supabase-db
+          property: anon-key
+      - key: REPORT_CHANNELS
+        value: "@finanosint,@time_n_John"
+      - key: PYTHONUNBUFFERED
+        value: "1"
+    envSecrets:
+      - key: GOOGLE_TRANSLATE_API_KEY
+        generateValue: true
