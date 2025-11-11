@@ -2,8 +2,6 @@ services:
   - type: web
     name: telegram-analytic-bot
     runtime: python
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "python main.py"
     envVars:
       - key: TELEGRAM_BOT_TOKEN
         fromSecret: TELEGRAM_BOT_TOKEN
@@ -17,8 +15,7 @@ services:
           property: anon-key
       - key: REPORT_CHANNELS
         value: "@finanosint,@time_n_John"
-      - key: PYTHONUNBUFFERED
-        value: "1"
-    envSecrets:
-      - key: GOOGLE_TRANSLATE_API_KEY
-        generateValue: true
+      - key: BING_NEWS_API_KEY
+        fromSecret: BING_NEWS_API_KEY
+    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
+    startCommand: "python main.py"
