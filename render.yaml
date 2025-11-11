@@ -2,20 +2,23 @@ services:
   - type: web
     name: telegram-analytic-bot
     runtime: python
+    env: python
+    buildCommand: |
+      python -m venv .venv
+      source .venv/bin/activate
+      pip install --upgrade pip
+      pip install --constraint constraints.txt -r requirements.txt
+    startCommand: |
+      source .venv/bin/activate
+      python main.py
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
       - key: TELEGRAM_BOT_TOKEN
         fromSecret: TELEGRAM_BOT_TOKEN
       - key: SUPABASE_URL
-        fromDatabase:
-          name: supabase-db
-          property: url
+        fromSecret: SUPABASE_URL
       - key: SUPABASE_KEY
-        fromDatabase:
-          name: supabase-db
-          property: anon-key
+        fromSecret: SUPABASE_KEY
       - key: REPORT_CHANNELS
         value: "@finanosint,@time_n_John"
-      - key: BING_NEWS_API_KEY
-        fromSecret: BING_NEWS_API_KEY
-    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
-    startCommand: "python main.py"
