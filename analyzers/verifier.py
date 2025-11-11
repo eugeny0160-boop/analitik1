@@ -1,7 +1,30 @@
 import re
 import requests
 from datetime import datetime, timedelta
-from newspaper import Article
+try:
+    from newspaper import Article
+except ImportError:
+    # Резервный вариант при проблемах с newspaper3k
+    from bs4 import BeautifulSoup
+    import requests
+    
+    def safe_extract_content(url: str) -> str:
+        """Извлечение контента без newspaper3k"""
+        try:
+            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+            response = requests.get(url, headers=headers, timeout=10)
+            soup = BeautifulSoup(response.text, 'html.parser')
+            
+            # Удаление нежелательных элементов
+            for element in soup(['script', 'style', 'nav', 'footer', 'header']):
+                element.decompose()
+            
+            # Извлечение основного контента
+            paragraphs = soup.find_all('p')
+            return ' '.join([p.get_text().strip() for p in paragraphs if len(p.get_text()) > 50])
+        except Exception as e:
+            logging.warning(f"Content extraction failed: {str(e)}")
+            return ""
 from .categorizer import extract_entities
 
 def extract_url(text: str) -> str:
